@@ -1,4 +1,4 @@
-package stacks
+package queues
 
 import (
 	"testing"
@@ -6,27 +6,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createIntStack(content []int) *Stack {
-	s := new(Stack)
+func createIntQueue(content []int) *Queue {
+	s := new(Queue)
 	for _, value := range content {
-		s.Add(value)
+		s.Enqueue(value)
 	}
 	return s
 }
 
-func popNthTimes(n int, s *Stack, t *testing.T) *([]int) {
+func dequeueNthTimes(n int, q *Queue, t *testing.T) *([]int) {
 	deleted := make([]int, 0)
 	for i := 0; i < n; i++ {
-		value, found := s.Pop()
+		value, found := q.Dequeue()
 		if !found {
-			t.Error("Stack must pop.")
+			t.Error("Queue must Dequeue.")
 		}
 		deleted = append(deleted, (*value).(int))
 	}
 	return &deleted
 }
 
-func TestStack(t *testing.T) {
+func TestQueue(t *testing.T) {
 	testsInt := []struct {
 		name, wantedString string
 		want               []int
@@ -42,19 +42,19 @@ func TestStack(t *testing.T) {
 		},
 		{
 			name:         "3 int array",
-			wantedString: "3 -> 2 -> 1",
-			want:         []int{3, 2, 1},
+			wantedString: "1 -> 2 -> 3",
+			want:         []int{1, 2, 3},
 			content:      []int{1, 2, 3},
 			expectedTail: 1,
 		},
 	}
 	for _, test := range testsInt {
 		t.Run(test.name, func(t *testing.T) {
-			s := createIntStack(test.content)
-			got := s.String()
-			assert.Equal(t, len(test.content), s.Length())
-			assert.Equal(t, got, test.wantedString)
-			content := popNthTimes(s.Length(), s, t)
+			q := createIntQueue(test.content)
+			got := q.String()
+			assert.Equal(t, len(test.content), q.Length())
+			assert.Equal(t, test.wantedString, got)
+			content := dequeueNthTimes(q.Length(), q, t)
 			assert.Equal(t, test.want, *content)
 		})
 	}
