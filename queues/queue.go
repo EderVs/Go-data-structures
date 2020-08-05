@@ -4,6 +4,7 @@ import (
 	"github.com/edervs/go-data-structures/lists"
 )
 
+// Queue is a simple implementation using LinkedList.
 type Queue struct {
 	lists.LinkedList
 }

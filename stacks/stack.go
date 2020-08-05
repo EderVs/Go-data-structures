@@ -4,6 +4,7 @@ import (
 	"github.com/edervs/go-data-structures/lists"
 )
 
+// Stack is a simple implmentation using LinkedList.
 type Stack struct {
 	lists.LinkedList
 }

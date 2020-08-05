@@ -5,16 +5,18 @@ import (
 	"strings"
 )
 
+// LinkedListNode is a node in LinkedList.
 type LinkedListNode struct {
 	Value interface{}
 	next  *LinkedListNode
 }
 
-// IsEmpty returns if the list is empty.
+// Next returns next node.
 func (node *LinkedListNode) Next() interface{} {
 	return node.Next
 }
 
+// LinkedList is a simple implemention of the data structure.
 type LinkedList struct {
 	head   *LinkedListNode
 	tail   *LinkedListNode
@@ -55,7 +57,7 @@ func (list *LinkedList) String() string {
 	return b.String()
 }
 
-// Insert inserts the value into the list and returns the LinkedListNode created.
+// Append inserts the value into the end of the list.
 func (list *LinkedList) Append(value interface{}) {
 	node := &LinkedListNode{Value: value}
 	list.length++
@@ -69,6 +71,7 @@ func (list *LinkedList) Append(value interface{}) {
 	list.tail = node
 }
 
+// Insert inserts the value into the start of the list.
 func (list *LinkedList) Insert(value interface{}) {
 	node := &LinkedListNode{Value: value}
 	list.length++
@@ -94,7 +97,7 @@ func (list *LinkedList) Pop() (*interface{}, bool) {
 	return &node.Value, true
 }
 
-// PopIth deletes the ith value.
+// GetIthNode gets the ith node.
 func (list *LinkedList) GetIthNode(i int) (*LinkedListNode, bool) {
 	if i < 0 {
 		return nil, false
