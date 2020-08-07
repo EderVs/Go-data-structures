@@ -186,3 +186,79 @@ func TestPrefixTree_Search(t *testing.T) {
 		})
 	}
 }
+
+func TestPrefixTree_SearchPossibles(t *testing.T) {
+	testsInt := []struct {
+		name          string
+		want, content [][]interface{}
+		search        []interface{}
+	}{
+		{
+			name:    "Search in empty Trie.",
+			want:    make([][]interface{}, 0),
+			content: make([][]interface{}, 0),
+			search:  []interface{}{1},
+		},
+		{
+			name:    "One value",
+			want:    [][]interface{}{{1, 2}},
+			content: [][]interface{}{{1, 2}},
+			search:  []interface{}{1},
+		},
+		{
+			name:    "2 values same prefix.",
+			want:    [][]interface{}{{1, 2}, {1, 3}},
+			content: [][]interface{}{{1, 2}, {1, 3}},
+			search:  []interface{}{1},
+		},
+		{
+			name:    "1 exact value.",
+			want:    [][]interface{}{{1, 3}},
+			content: [][]interface{}{{1, 2}, {1, 3}},
+			search:  []interface{}{1, 3},
+		},
+		{
+			name:    "1 two possibles value.",
+			want:    [][]interface{}{{1, 3}, {1, 2}},
+			content: [][]interface{}{{1, 2}, {1, 3}},
+			search:  []interface{}{1, 4},
+		},
+		{
+			name:    "Search value not in Trie.",
+			want:    make([][]interface{}, 0),
+			content: [][]interface{}{{1, 2}, {1, 3}},
+			search:  []interface{}{2},
+		},
+		{
+			name:    "Prefix is also a final chain.",
+			want:    [][]interface{}{{1, 2}, {1, 3}, {1}},
+			content: [][]interface{}{{1, 2}, {1, 3}, {1}},
+			search:  []interface{}{1},
+		},
+		{
+			name:    "Exclude other chains.",
+			want:    [][]interface{}{{1, 2}, {1, 3}, {1}},
+			content: [][]interface{}{{1, 2}, {1, 3}, {1}, {2, 4}},
+			search:  []interface{}{1},
+		},
+		{
+			name:    "Just one chain.",
+			want:    [][]interface{}{{2, 4}},
+			content: [][]interface{}{{1, 2}, {1, 3}, {1}, {2, 4}},
+			search:  []interface{}{2},
+		},
+		{
+			name:    "Do not return previous possible prefixes.",
+			want:    [][]interface{}{{1, 2, 3}, {1, 2, 4, 5}, {1, 2}},
+			content: [][]interface{}{{1, 2, 3}, {1, 2, 4, 5}, {1, 2}, {1}, {1, 3}},
+			search:  []interface{}{1, 2},
+		},
+	}
+	for _, test := range testsInt {
+		t.Run(test.name, func(t *testing.T) {
+			pT := createPrefixTree(test.content)
+			got := pT.SearchPossibles(test.search)
+			checkValues(t, test.want, got)
+		})
+	}
+}
