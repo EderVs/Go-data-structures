@@ -28,6 +28,22 @@ func (node *PrefixNode) insertEachElement(value []interface{}, from int) {
 	node.isFinal = true
 }
 
+func (node *PrefixNode) getFinalChainValues() *[][]interface{} {
+	chains := make([][]interface{}, 0)
+	if len(node.children) > 0 {
+		for _, child := range node.children {
+			chains = append(chains, *child.getFinalChainValues()...)
+		}
+	}
+	for i := range chains {
+		chains[i] = append([]interface{}{node.value}, chains[i]...)
+	}
+	if node.isFinal {
+		chains = append(chains, []interface{}{node.value})
+	}
+	return &chains
+}
+
 func (node *PrefixNode) setValue(value interface{}) {
 	node.value = value
 	node.hasValue = true
@@ -118,4 +134,16 @@ func (pT *PrefixTree) Insert(value []interface{}) {
 	}
 	node, from := pT.searchLastNode(value)
 	node.insertEachElement(value, from)
+}
+
+// GetValues returns all the values stored.
+func (pT *PrefixTree) GetValues() [][]interface{} {
+	values := make([][]interface{}, 0)
+	if pT.root == nil {
+		return values
+	}
+	for _, child := range pT.root.children {
+		values = append(values, *child.getFinalChainValues()...)
+	}
+	return values
 }
