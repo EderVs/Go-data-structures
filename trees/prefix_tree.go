@@ -90,7 +90,7 @@ func (node *PrefixNode) searchLastNode(prefix []interface{}) (*PrefixNode, int) 
 		node = node.children[prefix[i]]
 		i++
 	}
-	return node, i
+	return node, i - 1
 }
 
 func createNode() *PrefixNode {
@@ -118,7 +118,7 @@ func (pT *PrefixTree) Length() int {
 // searchLastNode returns the last node with the prefix.
 func (pT *PrefixTree) searchLastNode(prefix []interface{}) (*PrefixNode, int) {
 	if pT.root == nil {
-		return nil, 0
+		return nil, -1
 	}
 	return pT.root.searchLastNode(prefix)
 }
@@ -133,7 +133,7 @@ func (pT *PrefixTree) Insert(value []interface{}) {
 		return
 	}
 	node, from := pT.searchLastNode(value)
-	node.insertEachElement(value, from)
+	node.insertEachElement(value, from+1)
 }
 
 // GetValues returns all the values stored.
@@ -144,6 +144,31 @@ func (pT *PrefixTree) GetValues() [][]interface{} {
 	}
 	for _, child := range pT.root.children {
 		values = append(values, *child.getFinalChainValues()...)
+	}
+	return values
+}
+
+// SearchPossibles returns the values that has as some prefix in the prefix the value given.
+func (pT *PrefixTree) SearchPossibles(prefix []interface{}) [][]interface{} {
+	values := make([][]interface{}, 0)
+	lastNode, i := pT.searchLastNode(prefix)
+	if i == -1 {
+		return values
+	}
+	return *lastNode.getFinalChainValues()
+}
+
+// Search returns the values that has as prefix the value given.
+func (pT *PrefixTree) Search(prefix []interface{}) [][]interface{} {
+	values := make([][]interface{}, 0)
+	lastNode, to := pT.searchLastNode(prefix)
+	if to+1 != len(prefix) {
+		return values
+	}
+	values = *lastNode.getFinalChainValues()
+	prefixInTrie := prefix[:to]
+	for i := range values {
+		values[i] = append(prefixInTrie, values[i]...)
 	}
 	return values
 }
