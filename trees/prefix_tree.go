@@ -5,7 +5,9 @@ import (
 	"strings"
 )
 
-// PrefixNode is the Node of PrefixTree.
+/*PrefixNode is the Node of PrefixTree.
+value must be hasheable.
+*/
 type PrefixNode struct {
 	value    interface{}
 	children map[interface{}]*PrefixNode
@@ -21,7 +23,7 @@ func (node *PrefixNode) insertEachElement(value []interface{}, from int) {
 	for i := from; i < len(value); i++ {
 		element = value[i]
 		newNode := createNode()
-		newNode.setValue(element)
+		newNode.SetValue(element)
 		node.children[element] = newNode
 		node = newNode
 	}
@@ -44,18 +46,19 @@ func (node *PrefixNode) getFinalChainValues() *[][]interface{} {
 	return &chains
 }
 
-func (node *PrefixNode) setValue(value interface{}) {
+// SetValue sets the value of the node.
+func (node *PrefixNode) SetValue(value interface{}) {
 	node.value = value
 	node.hasValue = true
 }
 
-// isLeaf returns True if it doesn't have any children.
-func (node *PrefixNode) isLeaf() bool {
+// IsLeaf returns True if it doesn't have any children.
+func (node *PrefixNode) IsLeaf() bool {
 	return len(node.children) == 0
 }
 
 // string returns the string representation of a Node
-func (node *PrefixNode) string() string {
+func (node *PrefixNode) String() string {
 	if node == nil {
 		return ""
 	}
@@ -67,7 +70,7 @@ func (node *PrefixNode) string() string {
 	numChildren := len(node.children)
 	i := 0
 	for _, child := range node.children {
-		b.WriteString(child.string())
+		b.WriteString(child.String())
 		if i < numChildren-1 {
 			b.WriteString(", ")
 		}
@@ -82,7 +85,7 @@ func (node *PrefixNode) string() string {
 func (node *PrefixNode) searchLastNode(prefix []interface{}) (*PrefixNode, int) {
 	i := 0
 	n := len(prefix)
-	for !node.isLeaf() && i < n {
+	for !node.IsLeaf() && i < n {
 		_, found := node.children[prefix[i]]
 		if !found {
 			break
@@ -107,7 +110,7 @@ type PrefixTree struct {
 
 // String returns a string representation of PrefixTree.
 func (pT *PrefixTree) String() string {
-	return pT.root.string()
+	return pT.root.String()
 }
 
 // Length returns the length of the PrefixTree.
